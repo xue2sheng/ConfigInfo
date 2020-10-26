@@ -1,0 +1,42 @@
+# Universal Windows Platform
+    
+# Build a Universal Windows Platform project using Visual Studio.
+# Add steps that test and distribute an app, save build artifacts, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: CMake@1
+  inputs:
+    workingDirectory: 'build'
+    cmakeArgs: '-G "Visual Studio 16 2019" -A x64  -DCMAKE_CONFIGURATION_TYPES:STRING="Release" -DCMAKE_VERBOSE_MAKEFILE:BOOL="True"  $(Build.SourcesDirectory)'
+    runInsideShell: true
+
+- task: CMake@1
+  inputs:
+    cmakeArgs: '--build . --config Release'
+
+#- task: CmdLine@2
+#  displayName: 'Run Unit Tests'
+#  inputs:
+#    script: 'ctest --verbose -C Release -T test'
+#    workingDirectory: 'build'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/Release/**/?(*.exe|*.dll|*.pdb)'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop
+
+#- task: PublishTestResults@2
+#  inputs:
+#    testResultsFormat: 'CTest'
+#    testResultsFiles: 'build/Testing/*/Test.xml
+

@@ -1,0 +1,23 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Release",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "installRoot": "${projectDir}\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "intelliSenseMode": "windows-msvc-x64",
+      "variables": [
+        {
+          "name": "CMAKE_VERBOSE_MAKEFILE",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    }
+  ]
+}
