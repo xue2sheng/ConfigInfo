@@ -18,35 +18,24 @@ const wstring XmlInfo::GetConfigFile()
     return wstr;
 }
 
-const string XmlInfo::ConfigFile()
+const wstring XmlInfo::Target() const
 {
-    wstring configFile{ XmlInfo::GetConfigFile() };
-    
-    const auto size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &configFile[0], static_cast<int>(configFile.size()), nullptr, 0, nullptr, nullptr);
-	string configFileName = string(size, 0);
-	WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &configFile[0], static_cast<int>(configFile.size()), &configFileName[0], size, nullptr, nullptr);
-
-    return configFileName;
+    return _target.c_str();
 }
 
-const std::string XmlInfo::Target() const
+const int XmlInfo::Port() const
 {
-    wstring target{ _target.c_str() };
-    
-    const auto size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &target[0], static_cast<int>(target.size()), nullptr, 0, nullptr, nullptr);
-	string result = string(size, 0);
-	WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &target[0], static_cast<int>(target.size()), &result[0], size, nullptr, nullptr);
-
-    return result;
+    return _port;
 }
 
 XmlInfo::XmlInfo(const wstring& filename)
+    : _target(L"empty"), _port(3000)
 {
     if (filesystem::exists(filename))
     {
         try {
-            std::ifstream toRead(filename);
-            std::string fileXML(std::istreambuf_iterator<char>{toRead}, {});
+            ifstream toRead(filename);
+            string fileXML(istreambuf_iterator<char>{toRead}, {});
             if (!fileXML.empty()) {
                 
                 XmlDocument infoDoc;
@@ -57,6 +46,12 @@ XmlInfo::XmlInfo(const wstring& filename)
                     {
                         _target = target.GetAt(0).InnerText();
                     }
+                    auto port = infoDoc.SelectNodes(L"//ServerPort");
+                    if (port.Size() == 1)
+                    {
+                        StrToIntEx(port.GetAt(0).InnerText().c_str(), STIF_DEFAULT, &_port);
+                    }
+
                 }
             }
         }

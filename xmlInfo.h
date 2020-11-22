@@ -3,11 +3,12 @@
 class XmlInfo {
 public:
 	static const std::wstring GetConfigFile();
-	static const std::string ConfigFile();
 
 	explicit XmlInfo(const std::wstring& filename = XmlInfo::GetConfigFile());
-	const std::string Target() const;
+	const std::wstring Target() const;
+	const int Port() const;
 
 private:
 	winrt::hstring _target;
+	int _port;
 };

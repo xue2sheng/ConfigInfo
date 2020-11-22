@@ -1,4 +1,5 @@
 #include "gui.h"
+#include <string>
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
@@ -58,14 +59,19 @@ struct DesktopWindow
         }
         else if (WM_CREATE == message)
         {
-            m_label = CreateWindow("static", "label",
+            m_label = CreateWindow(L"static", L"label",
                 WS_CHILD | WS_VISIBLE | SS_CENTER,
                 20, 20, 600, 20,
                 m_window, reinterpret_cast<HMENU>(501),
                 nullptr, nullptr);
-            m_target = CreateWindow("static", "label",
+            m_target = CreateWindow(L"static", L"target",
                 WS_CHILD | WS_VISIBLE | SS_CENTER,
                 20, 60, 600, 20,
+                m_window, reinterpret_cast<HMENU>(502),
+                nullptr, nullptr);
+            m_httpServer = CreateWindow(L"static", L"httpServer",
+                WS_CHILD | WS_VISIBLE | SS_CENTER,
+                20, 100, 600, 20,
                 m_window, reinterpret_cast<HMENU>(502),
                 nullptr, nullptr);
         }
@@ -76,21 +82,28 @@ struct DesktopWindow
             FillRect(hdc, &ps.rcPaint, reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1));
             SetWindowText(m_label, m_info.c_str());
             SetWindowText(m_target, m_grpc.c_str());
+            SetWindowText(m_httpServer, m_port.c_str());
             EndPaint(m_window, &ps);
         }
 
         return DefWindowProc(m_window, message, wparam, lparam);
     }
 
-    void SetInfo(const std::string& info)
+    void SetInfo(const std::wstring& info)
     {
         m_info = info;
     }
 
-    void SetTarget(const std::string& target)
+    void SetTarget(const std::wstring& target)
     {
         m_grpc = target;
     }
+
+    void SetPort(const int port)
+    {
+        m_port = std::to_wstring(port);
+    }
+
 
 protected:
 
@@ -98,8 +111,10 @@ protected:
     HWND m_window = nullptr;
     HWND m_label = nullptr;
     HWND m_target = nullptr;
-    std::string m_info;
-    std::string m_grpc;
+    HWND m_httpServer = nullptr;
+    std::wstring m_info;
+    std::wstring m_grpc;
+    std::wstring m_port;
 };
 
 struct Window : DesktopWindow<Window>
@@ -109,14 +124,14 @@ struct Window : DesktopWindow<Window>
         WNDCLASS wc{};
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wc.hInstance = reinterpret_cast<HINSTANCE>(&__ImageBase);
-        wc.lpszClassName = "ConfigInfo";
+        wc.lpszClassName = L"ConfigInfo";
         wc.style = CS_HREDRAW | CS_VREDRAW;
         wc.lpfnWndProc = WndProc;
         RegisterClass(&wc);
         WINRT_ASSERT(!m_window);
 
         WINRT_VERIFY(CreateWindow(wc.lpszClassName,
-            "ConfigInfo",
+            L"ConfigInfo",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
             nullptr, nullptr, wc.hInstance, this));
@@ -134,8 +149,9 @@ GUI::GUI(const XmlInfo& info)
 {
     auto controller = CreateDispatcherQueueController();
     Window window;
-    window.SetInfo(info.ConfigFile());
+    window.SetInfo(info.GetConfigFile());
     window.SetTarget(info.Target());
+    window.SetPort(info.Port());
 
     MSG message;
     while (GetMessage(&message, nullptr, 0, 0))
