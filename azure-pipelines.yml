@@ -27,7 +27,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**/ConfigInfo.?(exe|xml)'
+    contents: '**/Release/**?(*.exe|*.xml|*.dll|*.pdb)'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
