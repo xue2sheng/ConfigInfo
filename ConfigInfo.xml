@@ -2,4 +2,6 @@
 <ConfigInfo>
   <Target>example</Target>
   <ServerPort>3000</ServerPort>
+  <HTTPMessage>Ready</HTTPMessage>
+  <URL>http://localhost:3500/</URL>
 </ConfigInfo>

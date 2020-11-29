@@ -19,4 +19,4 @@
 #include <shellapi.h> // order is important
 #include <shlwapi.h>
 #include <http.h>
-#include <stdio.h>
+#include <strsafe.h>

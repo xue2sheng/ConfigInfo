@@ -28,8 +28,23 @@ const int XmlInfo::Port() const
     return _port;
 }
 
+const std::wstring XmlInfo::Message() const
+{
+    return _message;
+}
+
+void XmlInfo::Message(const std::wstring msg)
+{
+    _message = msg;
+}
+
+const std::wstring XmlInfo::URL() const
+{
+    return _url;
+}
+
 XmlInfo::XmlInfo(const wstring& filename)
-    : _target(L"empty"), _port(3000)
+    : _target(L"empty"), _port(3000), _message(L"Ready"), _url(L"localhost")
 {
     if (filesystem::exists(filename))
     {
@@ -51,7 +66,16 @@ XmlInfo::XmlInfo(const wstring& filename)
                     {
                         StrToIntEx(port.GetAt(0).InnerText().c_str(), STIF_DEFAULT, &_port);
                     }
-
+                    auto message = infoDoc.SelectNodes(L"//HTTPMessage");
+                    if (message.Size() == 1)
+                    {
+                        _message = message.GetAt(0).InnerText();
+                    }
+                    auto url = infoDoc.SelectNodes(L"//URL");
+                    if (url.Size() == 1)
+                    {
+                        _url = url.GetAt(0).InnerText();
+                    }
                 }
             }
         }

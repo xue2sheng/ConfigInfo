@@ -64,16 +64,27 @@ struct DesktopWindow
                 20, 20, 600, 20,
                 m_window, reinterpret_cast<HMENU>(501),
                 nullptr, nullptr);
-            m_target = CreateWindow(L"static", L"target",
+             m_target = CreateWindow(L"static", L"target",
                 WS_CHILD | WS_VISIBLE | SS_CENTER,
                 20, 60, 600, 20,
                 m_window, reinterpret_cast<HMENU>(502),
                 nullptr, nullptr);
-            m_httpServer = CreateWindow(L"static", L"httpServer",
+             m_server = CreateWindow(L"static", L"server",
                 WS_CHILD | WS_VISIBLE | SS_CENTER,
                 20, 100, 600, 20,
-                m_window, reinterpret_cast<HMENU>(502),
+                m_window, reinterpret_cast<HMENU>(503),
                 nullptr, nullptr);
+             m_httpURL = CreateWindow(L"static", L"httpURL",
+                WS_CHILD | WS_VISIBLE | SS_CENTER,
+                20, 140, 600, 20,
+                m_window, reinterpret_cast<HMENU>(504),
+                nullptr, nullptr);
+             m_httpMessage = CreateWindow(L"static", L"httpMessage",
+                WS_CHILD | WS_VISIBLE | SS_CENTER,
+                20, 180, 800, 20,
+                m_window, reinterpret_cast<HMENU>(505),
+                nullptr, nullptr);
+
         }
         else if (WM_PAINT == message)
         {
@@ -82,7 +93,9 @@ struct DesktopWindow
             FillRect(hdc, &ps.rcPaint, reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1));
             SetWindowText(m_label, m_info.c_str());
             SetWindowText(m_target, m_grpc.c_str());
-            SetWindowText(m_httpServer, m_port.c_str());
+            SetWindowText(m_server, m_port.c_str());
+            SetWindowText(m_httpURL, m_url.c_str());
+            SetWindowText(m_httpMessage, m_message.c_str());
             EndPaint(m_window, &ps);
         }
 
@@ -104,6 +117,15 @@ struct DesktopWindow
         m_port = std::to_wstring(port);
     }
 
+    void SetMessage(const std::wstring& msg)
+    {
+        m_message = msg;
+    }
+
+    void SetURL(const std::wstring& url) 
+    {
+        m_url = url;
+    }
 
 protected:
 
@@ -111,10 +133,14 @@ protected:
     HWND m_window = nullptr;
     HWND m_label = nullptr;
     HWND m_target = nullptr;
-    HWND m_httpServer = nullptr;
+    HWND m_server = nullptr;
+    HWND m_httpMessage = nullptr;
+    HWND m_httpURL = nullptr;
     std::wstring m_info;
     std::wstring m_grpc;
     std::wstring m_port;
+    std::wstring m_message;
+    std::wstring m_url;
 };
 
 struct Window : DesktopWindow<Window>
@@ -152,6 +178,8 @@ GUI::GUI(const XmlInfo& info)
     window.SetInfo(info.GetConfigFile());
     window.SetTarget(info.Target());
     window.SetPort(info.Port());
+    window.SetMessage(info.Message());
+    window.SetURL(info.URL());
 
     MSG message;
     while (GetMessage(&message, nullptr, 0, 0))
