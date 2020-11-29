@@ -30,6 +30,12 @@ steps:
     contents: '**/Release/**/?(*.exe|*.dll|*.pdb)'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 
+- task: CopyFiles@3
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '*.xml'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
