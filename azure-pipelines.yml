@@ -32,7 +32,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/build/Release'
     artifactName: drop
 
 #- task: PublishTestResults@2
